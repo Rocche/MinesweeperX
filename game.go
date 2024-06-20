@@ -4,6 +4,7 @@ import (
 	"math/rand"
 )
 
+// Status is the status of a cell
 type Status int
 
 const (
@@ -12,6 +13,7 @@ const (
 	FLAG
 )
 
+// GameStatus is the status of the game
 type GameStatus int
 
 const (
@@ -20,11 +22,13 @@ const (
 	LOSE
 )
 
+// Coord is a struct representing the coordinates in the game grid
 type Coord struct {
 	Row int
 	Col int
 }
 
+// Cell is a struct defining a cell in the game grid
 type Cell struct {
 	Row     int
 	Col     int
@@ -32,25 +36,27 @@ type Cell struct {
 	Content int
 }
 
+// Game is the struct containing all the info needed to render the game
 type Game struct {
 	Rows       int
 	Cols       int
 	Cells      [][]Cell
-	Bombs      int
+	Mines      int
 	GameStatus GameStatus
 }
 
+// updateGameStatus checks all cells in order to decide the game status
 func (g *Game) updateGameStatus() {
 	status := WIN
 	for r := 0; r < g.Rows; r++ {
 		for c := 0; c < g.Rows; c++ {
 			cell := g.Cells[r][c]
-			// bomb and open: lose
+			// mine and open: lose
 			if cell.Content == 9 && cell.Status == OPEN {
 				g.GameStatus = LOSE
 				return
 			}
-			// not bomb and close: running
+			// not mine and close: running
 			if cell.Content != 9 && cell.Status == CLOSE {
 				status = RUNNING
 			}
@@ -59,6 +65,8 @@ func (g *Game) updateGameStatus() {
 	g.GameStatus = status
 }
 
+// reveal sets the cell status to [OPEN] and if set reveals the
+// adjacent cells in case the cell is empty in a recursive manner
 func (g *Game) reveal(row, col int, propagateIfEmpty bool) {
 	if row < 0 || row >= g.Rows || col < 0 || col >= g.Cols {
 		return
@@ -81,6 +89,7 @@ func (g *Game) reveal(row, col int, propagateIfEmpty bool) {
 	g.reveal(row+1, col+1, propagateIfEmpty)
 }
 
+// OpenCell reveals the clicked cell
 func (g *Game) OpenCell(row, col int, propagateIfEmpty bool) {
 	if row < 0 || row >= g.Rows || col < 0 || col >= g.Cols {
 		return
@@ -105,6 +114,7 @@ func (g *Game) OpenCell(row, col int, propagateIfEmpty bool) {
 	g.updateGameStatus()
 }
 
+// Flag flags the given cell
 func (g *Game) Flag(row, col int) {
 	if row < 0 || row >= g.Rows || col < 0 || col >= g.Cols {
 		return
@@ -119,6 +129,8 @@ func (g *Game) Flag(row, col int) {
 	}
 }
 
+// Chord reveals the adjacent cells to an already open one if
+// the content of the cells is equal ato the adjacent flagged cells
 func (g *Game) Chord(row, col int) {
 	if row < 0 || row >= g.Rows || col < 0 || col >= g.Cols {
 		return
@@ -144,8 +156,10 @@ func (g *Game) Chord(row, col int) {
 	g.updateGameStatus()
 }
 
-func (g *Game) GetRemainingBombsCount() int {
-	count := g.Bombs
+// GetRemainingMinesCount returns the number of mines remaining,
+// which is the initial number of mines minus the flagged cells
+func (g *Game) GetRemainingMinesCount() int {
+	count := g.Mines
 	for _, cellsRow := range g.Cells {
 		for _, cell := range cellsRow {
 			if cell.Status == FLAG {
@@ -156,6 +170,8 @@ func (g *Game) GetRemainingBombsCount() int {
 	return count
 }
 
+// getNumberOfAdjacentFlaggedCells gets how many cells adjacent to the
+// given one are flagged
 func (g *Game) getNumberOfAdjacentFlaggedCells(row, col int) int {
 	count := 0
 	for r := row - 1; r <= row+1; r++ {
@@ -171,15 +187,16 @@ func (g *Game) getNumberOfAdjacentFlaggedCells(row, col int) int {
 	return count
 }
 
-func NewGame(rows, cols, nBombs int) *Game {
+// NewGame initializes a new [Game] with given rows, columns and number of mines
+func NewGame(rows, cols, nMines int) *Game {
 	game := &Game{
 		Rows:       rows,
 		Cols:       cols,
-		Bombs:      nBombs,
+		Mines:      nMines,
 		Cells:      [][]Cell{},
 		GameStatus: RUNNING,
 	}
-	bombs := generateBombs(rows, cols, nBombs)
+	bombs := generateMines(rows, cols, nMines)
 	for r := 0; r < rows; r++ {
 		row := make([]Cell, 0)
 		for c := 0; c < cols; c++ {
@@ -194,7 +211,7 @@ func NewGame(rows, cols, nBombs int) *Game {
 			if isBomb {
 				content = 9
 			} else {
-				content = getNumberOfNearBombs(r, c, bombs)
+				content = getNumberOfNearMines(r, c, bombs)
 			}
 			row = append(row, Cell{r, c, CLOSE, content})
 		}
@@ -203,33 +220,39 @@ func NewGame(rows, cols, nBombs int) *Game {
 	return game
 }
 
-func generateBombs(rows, cols, nBombs int) []Coord {
-	bombsMap := make(map[Coord]struct{})
-	for i := 0; i < nBombs; i++ {
+// generateMines returns a slice of [Coord] representing where the mines
+// should be placed
+func generateMines(rows, cols, nMines int) []Coord {
+	// first we populate a map of [Coord] in order
+	// to check that the random generated coordinates are unique
+	minesMap := make(map[Coord]struct{})
+	for i := 0; i < nMines; i++ {
 		r := rand.Intn(rows)
 		c := rand.Intn(cols)
 		coord := Coord{r, c}
-		_, ok := bombsMap[coord]
+		_, ok := minesMap[coord]
 		if !ok {
-			bombsMap[coord] = struct{}{}
+			minesMap[coord] = struct{}{}
 		} else {
 			// repeat the cycle because the coord is already taken
 			i--
 		}
 	}
+	// finally we transform the map into a slice
 	coords := make([]Coord, 0)
-	for coord := range bombsMap {
+	for coord := range minesMap {
 		coords = append(coords, coord)
 	}
 	return coords
 }
 
-func getNumberOfNearBombs(row, col int, bombs []Coord) int {
-	nBombs := 0
-	for _, bomb := range bombs {
-		if ((row-bomb.Row <= 1) && (row-bomb.Row >= -1)) && ((col-bomb.Col <= 1) && (col-bomb.Col >= -1)) {
-			nBombs++
+// getNumberOfNearMines gets the number of near mines to a given cell
+func getNumberOfNearMines(row, col int, mines []Coord) int {
+	nMines := 0
+	for _, mine := range mines {
+		if ((row-mine.Row <= 1) && (row-mine.Row >= -1)) && ((col-mine.Col <= 1) && (col-mine.Col >= -1)) {
+			nMines++
 		}
 	}
-	return nBombs
+	return nMines
 }
