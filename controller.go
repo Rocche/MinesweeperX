@@ -27,7 +27,7 @@ func (g *GameController) Home(w http.ResponseWriter, r *http.Request) {
 func (g *GameController) StartGame(w http.ResponseWriter, r *http.Request) {
 	tmplFile := "templates/game.tmpl"
 	gridFile := "templates/game-grid.tmpl"
-	counterFile := "templates/bombs-counter.tmpl"
+	counterFile := "templates/mines-counter.tmpl"
 	statusFile := "templates/game-status.tmpl"
 	instructionsFile := "templates/instructions.tmpl"
 	tmpl, err := template.ParseFiles(tmplFile, gridFile, counterFile, instructionsFile, statusFile)
@@ -124,7 +124,7 @@ func (g *GameController) FlagCell(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 	g.Game.Flag(row, col)
-	w.Header().Add("HX-Trigger", "flagged") // needed to trigger bombs counter event
+	w.Header().Add("HX-Trigger", "flagged") // needed to trigger mines counter event
 	if g.Game.GameStatus != RUNNING {
 		w.Header().Add("HX-Trigger", "gameover")
 	}
@@ -159,13 +159,13 @@ func (g *GameController) ChordCell(w http.ResponseWriter, r *http.Request) {
 // MinesCounter serves the mine counter component with the actual
 // mines count
 func (g *GameController) MinesCounter(w http.ResponseWriter, r *http.Request) {
-	counterFile := "templates/bombs-counter.tmpl"
+	counterFile := "templates/mines-counter.tmpl"
 	tmpl, err := template.ParseFiles(counterFile)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 	count := g.Game.GetRemainingMinesCount()
-	err = tmpl.ExecuteTemplate(w, "bombsCounter", struct{ Bombs int }{count})
+	err = tmpl.ExecuteTemplate(w, "minesCounter", struct{ Mines int }{count})
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}

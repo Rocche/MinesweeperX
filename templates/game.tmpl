@@ -1,5 +1,5 @@
 <div class="w-full h-full flex flex-col justify-center items-center space-y-8">
-    {{ template "bombsCounter" . }}
+    {{ template "minesCounter" . }}
     {{ template "gameGrid" . }}
     <p class="hover:underline cursor-pointer"
     hx-get="/click-instructions" hx-trigger="click" hx-swap="none">
