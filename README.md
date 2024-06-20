@@ -3,6 +3,10 @@
 This project is my first attempt of exploring the [HTMX library](https://htmx.org/).
 I decided to give it a shot implementing a Minesweeper clone and, honestly, I had a ton of fun!
 
+## Preview
+
+![MinesweeperX preview](static/minesweeperx.mov)
+
 ## Requirements
 
 - Go 1.22
