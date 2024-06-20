@@ -1,0 +1,18 @@
+{{ define "instructions" }}
+<div class="absolute top-0 left-0 grid place-content-center 
+    w-screen h-screen bg-slate-600 bg-opacity-40">
+    <div class="w-[300px] bg-slate-50 flex flex-col space-y-2 border border-gray-700 rounded-md py-2 px-4">
+        <div class="flex flex-col space-y-2 w-full">
+            <div class="flex flex-row justify-between items-center w-full">
+                <span class="text-xl font-bold">How To Play</span>
+                <i class="fa fa-xmark fa-xl cursor-pointer"
+                hx-get="/game" hx-trigger="click" hx-target="#main"></i>
+            </div>
+            <hr>
+        </div>
+        <p class="whitespace-nowrap"><span class="text-blue-600 font-bold">Left Click</span> to reveal a cell</p>
+        <p class="whitespace-nowrap"><span class="text-blue-600 font-bold">Right Click</span> to flag a cell</p>
+        <p class="whitespace-nowrap"><span class="text-blue-600 font-bold">Ctrl+Click</span> to reveal adjacent cells</p>
+    </div>
+</div>
+{{ end }}

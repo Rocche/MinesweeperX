@@ -1,0 +1,63 @@
+{{ define "gameGrid" }}
+<div id="game-grid" class="flex flex-col">
+    {{ range .Cells }}
+        <div class="flex flex-row">
+            {{ range . }}
+                <!-- open cells -->
+                {{ if eq .Status 1 }}
+                    {{ if eq .Content 9 }}
+                        <div class="grid place-content-center w-8 h-8 bg-red-300 border border-gray-600"><i class="fa fa-bomb"></i></div>
+                    {{ else }}
+                        <div class="grid place-content-center w-8 h-8 bg-gray-300 border border-gray-600"
+                        oncontextmenu="return false;"
+                        hx-get="/chord?row={{.Row}}&col={{.Col}}"
+                        hx-trigger="click[ctrlKey]"
+                        hx-target="#game-grid">
+                            {{ if eq .Content 1 }}
+                                <i class="fa fa-1 text-blue-600"></i>
+                            {{ else if eq .Content 2 }}
+                                <i class="fa fa-2 text-green-700"></i>
+                            {{ else if eq .Content 3 }}
+                                <i class="fa fa-3 text-red-600"></i>
+                            {{ else if eq .Content 4 }}
+                                <i class="fa fa-4 text-indigo-800"></i>
+                            {{ else if eq .Content 5 }}
+                                <i class="fa fa-5 text-orange-800"></i>
+                            {{ else if eq .Content 6 }}
+                                <i class="fa fa-6 text-teal-400"></i>
+                            {{ else if eq .Content 7 }}
+                                <i class="fa fa-7 text-slate-950"></i>
+                            {{ else if eq .Content 8 }}
+                                <i class="fa fa-8 text-gray-600"></i>
+                            {{ end }}
+                        </div>
+                    {{ end }}
+                {{ else }}
+                <!-- close/flagged cells -->
+                    {{ if eq .Content 9 }}
+                        <div id="cell-{{.Row}}-{{.Col}}" class="grid place-content-center w-8 h-8 bg-red-200 border border-gray-600 hover:bg-gray-400 hover:cursor-pointer" 
+                        oncontextmenu="return false;">
+                            {{ if eq .Status 2 }} <i class="fa fa-flag text-red-500"></i> {{ end }}
+                        </div>
+                    {{ else }}
+                        <div id="cell-{{.Row}}-{{.Col}}" class="grid place-content-center w-8 h-8 bg-gray-200 border border-gray-600 hover:bg-gray-400 hover:cursor-pointer" 
+                        oncontextmenu="return false;">
+                            {{ if eq .Status 2 }} <i class="fa fa-flag text-red-500"></i> {{ end }}
+                        </div>
+                    {{ end }}
+                    <div
+                        hx-get="/flag?row={{.Row}}&col={{.Col}}"
+                        hx-trigger="contextmenu from:#cell-{{.Row}}-{{.Col}}"
+                        hx-target="#game-grid">
+                    </div>
+                    <div
+                        hx-get="/click?row={{.Row}}&col={{.Col}}"
+                        hx-trigger="click from:#cell-{{.Row}}-{{.Col}}"
+                        hx-target="#game-grid">
+                    </div>
+                {{ end }}
+            {{ end }}
+        </div>
+    {{ end }}
+</div>
+{{ end }}

@@ -1,0 +1,11 @@
+<div class="w-full h-full flex flex-col justify-center items-center space-y-8">
+    {{ template "bombsCounter" . }}
+    {{ template "gameGrid" . }}
+    <p class="hover:underline cursor-pointer"
+    hx-get="/click-instructions" hx-trigger="click" hx-swap="none">
+        <span><i class="fa fa-circle-question"></i></span>
+        How To Play
+    </p>
+</div>
+<div hx-get="/instructions" hx-trigger="instructions from:body"></div>
+<div hx-get="/status" hx-trigger="gameover from:body"></div>

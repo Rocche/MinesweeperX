@@ -1,0 +1,22 @@
+<div class="flex flex-col justify-center items-center space-y-8 w-full h-full">
+    {{ template "logo" . }}
+    <div class="flex flex-row justify-even h-16 w-64">
+        <div class="grid place-content-center w-2/12 h-full"
+        hx-get="/difficulty/hard"
+        hx-trigger="click"
+        hx-target="#difficulty">
+            <i class="fa fa-caret-left fa-2xl cursor-pointer hover:text-blue-600"></i>
+        </div>
+        <div class="flex flex-col items-center justify-center w-8/12 h-full">
+            <div class="font-bold text-xl text-blue-600">EASY</div>
+            <div class="text-gray-500">9x9 - 10 mines</div>
+        </div>
+        <div class="grid place-content-center w-2/12 h-full"
+        hx-get="/difficulty/medium"
+        hx-trigger="click"
+        hx-target="#difficulty">
+            <i class="fa fa-caret-right fa-2xl cursor-pointer hover:text-blue-600"></i>
+        </div>
+    </div>
+    {{ template "startButton" . }}
+</div>

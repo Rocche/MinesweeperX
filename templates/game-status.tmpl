@@ -1,0 +1,14 @@
+{{ define "gameStatus" }}
+<div class="absolute top-0 left-0 flex flex-col space-y-16 items-center justify-center 
+    w-screen h-screen
+    font-bold text-2xl bg-slate-600 bg-opacity-40
+    py-8">
+    {{ if eq .GameStatus 1 }}
+        <p class="text-[100px] text-blue-600">VICTORY</p>
+    {{ else if eq .GameStatus 2 }}
+        <p class="text-[100px] text-red-600">DEFEAT</p>
+    {{ end }}
+    <button class="px-4 py-2 border text-xl bg-blue-600 text-slate-50" 
+    hx-get="/" hx-trigger="click" hx-target="#main" hx-swap="outerHTML">Main Menu</button>
+</div>
+{{ end }}
