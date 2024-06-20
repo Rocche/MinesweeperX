@@ -38,11 +38,12 @@ type Cell struct {
 
 // Game is the struct containing all the info needed to render the game
 type Game struct {
-	Rows       int
-	Cols       int
-	Cells      [][]Cell
-	Mines      int
-	GameStatus GameStatus
+	Rows           int
+	Cols           int
+	Cells          [][]Cell
+	Mines          int
+	RemainingMines int
+	GameStatus     GameStatus
 }
 
 // updateGameStatus checks all cells in order to decide the game status
@@ -122,8 +123,10 @@ func (g *Game) Flag(row, col int) {
 	switch g.Cells[row][col].Status {
 	case CLOSE:
 		g.Cells[row][col].Status = FLAG
+		g.RemainingMines--
 	case FLAG:
 		g.Cells[row][col].Status = CLOSE
+		g.RemainingMines++
 	default:
 		return
 	}
@@ -159,15 +162,7 @@ func (g *Game) Chord(row, col int) {
 // GetRemainingMinesCount returns the number of mines remaining,
 // which is the initial number of mines minus the flagged cells
 func (g *Game) GetRemainingMinesCount() int {
-	count := g.Mines
-	for _, cellsRow := range g.Cells {
-		for _, cell := range cellsRow {
-			if cell.Status == FLAG {
-				count--
-			}
-		}
-	}
-	return count
+	return g.RemainingMines
 }
 
 // getNumberOfAdjacentFlaggedCells gets how many cells adjacent to the
@@ -190,11 +185,12 @@ func (g *Game) getNumberOfAdjacentFlaggedCells(row, col int) int {
 // NewGame initializes a new [Game] with given rows, columns and number of mines
 func NewGame(rows, cols, nMines int) *Game {
 	game := &Game{
-		Rows:       rows,
-		Cols:       cols,
-		Mines:      nMines,
-		Cells:      [][]Cell{},
-		GameStatus: RUNNING,
+		Rows:           rows,
+		Cols:           cols,
+		Mines:          nMines,
+		RemainingMines: nMines,
+		Cells:          [][]Cell{},
+		GameStatus:     RUNNING,
 	}
 	bombs := generateMines(rows, cols, nMines)
 	for r := 0; r < rows; r++ {

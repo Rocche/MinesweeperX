@@ -165,7 +165,7 @@ func (g *GameController) MinesCounter(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 	count := g.Game.GetRemainingMinesCount()
-	err = tmpl.ExecuteTemplate(w, "minesCounter", struct{ Mines int }{count})
+	err = tmpl.ExecuteTemplate(w, "minesCounter", struct{ RemainingMines int }{count})
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}

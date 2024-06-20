@@ -1,0 +1,8 @@
+{{ define "minesCounter" }}
+<div class="flex flex-row space-x-4 items-center text-gray-500" hx-get="/count" hx-trigger="flagged from:body">
+    <p id="bombsCounter">
+        <span class="text-xl font-bold text-blue-600 mr-1">{{ .RemainingMines }}</span>
+        mines remaining
+    </p>
+</div>
+{{ end }}
