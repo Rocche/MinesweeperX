@@ -20,7 +20,7 @@ do not want to use containers, you will need:
 
 
 ### Container
-To build the container, run the following commaind in the project folder:
+First clone the repository. Then, run the following commaind in the project folder:
 
 ```
 # if you have docker
