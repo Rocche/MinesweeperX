@@ -5,7 +5,7 @@ I decided to give it a shot implementing a Minesweeper clone and, honestly, I ha
 
 ## Preview
 
-![MinesweeperX preview](static/minesweeperx.mov)
+![MinesweeperX preview](static/minesweeperx.gif)
 
 ## Requirements
 
