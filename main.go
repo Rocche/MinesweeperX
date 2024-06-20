@@ -11,19 +11,18 @@ func InitController() {
 	gameController := GameController{
 		Game: *NewGame(9, 9, 10),
 	}
-	http.HandleFunc("/", gameController.serve)
-	http.HandleFunc("/game", gameController.game)
-	http.HandleFunc("/click", gameController.click)
-	http.HandleFunc("/flag", gameController.flag)
-	http.HandleFunc("/chord", gameController.chord)
-	http.HandleFunc("/reset", gameController.reset)
-	http.HandleFunc("/count", gameController.count)
-	http.HandleFunc("/status", gameController.status)
-	http.HandleFunc("/instructions", gameController.instructions)
-	http.HandleFunc("/click-instructions", gameController.clickInstructions)
-	http.HandleFunc("/difficulty/easy", gameController.easy)
-	http.HandleFunc("/difficulty/medium", gameController.medium)
-	http.HandleFunc("/difficulty/hard", gameController.hard)
+	http.HandleFunc("/", gameController.Home)
+	http.HandleFunc("/game", gameController.StartGame)
+	http.HandleFunc("/click", gameController.ClickCell)
+	http.HandleFunc("/flag", gameController.FlagCell)
+	http.HandleFunc("/chord", gameController.ChordCell)
+	http.HandleFunc("/count", gameController.MinesCounter)
+	http.HandleFunc("/status", gameController.GameStatus)
+	http.HandleFunc("/instructions", gameController.Instructions)
+	http.HandleFunc("/click-instructions", gameController.InstructionsClicked)
+	http.HandleFunc("/difficulty/easy", gameController.DifficultyEasy)
+	http.HandleFunc("/difficulty/medium", gameController.DifficultyMedium)
+	http.HandleFunc("/difficulty/hard", gameController.DifficultyHard)
 }
 
 func main() {

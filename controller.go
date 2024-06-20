@@ -7,11 +7,14 @@ import (
 	"strconv"
 )
 
+// GameController is the component responsible of managing the
+// client's requests and serving the components based on the Game status
 type GameController struct {
 	Game Game
 }
 
-func (g *GameController) serve(w http.ResponseWriter, r *http.Request) {
+// Home serves the initial view
+func (g *GameController) Home(w http.ResponseWriter, r *http.Request) {
 	tmplFile := "templates/index.tmpl"
 	tmpl, err := template.ParseFiles(tmplFile)
 	if err != nil {
@@ -20,7 +23,8 @@ func (g *GameController) serve(w http.ResponseWriter, r *http.Request) {
 	err = tmpl.Execute(w, nil)
 }
 
-func (g *GameController) game(w http.ResponseWriter, r *http.Request) {
+// StartGame serves the game view with the selected difficulty
+func (g *GameController) StartGame(w http.ResponseWriter, r *http.Request) {
 	tmplFile := "templates/game.tmpl"
 	gridFile := "templates/game-grid.tmpl"
 	counterFile := "templates/bombs-counter.tmpl"
@@ -33,7 +37,8 @@ func (g *GameController) game(w http.ResponseWriter, r *http.Request) {
 	err = tmpl.Execute(w, g.Game)
 }
 
-func (g *GameController) easy(w http.ResponseWriter, r *http.Request) {
+// DifficultyEasy serves the difficulty easy component
+func (g *GameController) DifficultyEasy(w http.ResponseWriter, r *http.Request) {
 	tmplFile := "templates/difficulty-easy.tmpl"
 	logoFile := "templates/logo.tmpl"
 	btnFile := "templates/start-button.tmpl"
@@ -44,7 +49,9 @@ func (g *GameController) easy(w http.ResponseWriter, r *http.Request) {
 	err = tmpl.Execute(w, nil)
 	g.Game = *NewGame(9, 9, 10)
 }
-func (g *GameController) medium(w http.ResponseWriter, r *http.Request) {
+
+// DifficultyMedium serves the difficulty medium component
+func (g *GameController) DifficultyMedium(w http.ResponseWriter, r *http.Request) {
 	tmplFile := "templates/difficulty-medium.tmpl"
 	logoFile := "templates/logo.tmpl"
 	btnFile := "templates/start-button.tmpl"
@@ -55,7 +62,9 @@ func (g *GameController) medium(w http.ResponseWriter, r *http.Request) {
 	err = tmpl.Execute(w, nil)
 	g.Game = *NewGame(16, 16, 40)
 }
-func (g *GameController) hard(w http.ResponseWriter, r *http.Request) {
+
+// DifficultyHard serves the difficulty hard component
+func (g *GameController) DifficultyHard(w http.ResponseWriter, r *http.Request) {
 	tmplFile := "templates/difficulty-hard.tmpl"
 	logoFile := "templates/logo.tmpl"
 	btnFile := "templates/start-button.tmpl"
@@ -67,17 +76,9 @@ func (g *GameController) hard(w http.ResponseWriter, r *http.Request) {
 	g.Game = *NewGame(16, 30, 99)
 }
 
-func (g *GameController) reset(w http.ResponseWriter, r *http.Request) {
-	tmplFile := "templates/game.tmpl"
-	tmpl, err := template.ParseFiles(tmplFile)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-	}
-	g.Game = *NewGame(g.Game.Rows, g.Game.Cols, g.Game.Bombs)
-	err = tmpl.Execute(w, g.Game)
-}
-
-func (g *GameController) click(w http.ResponseWriter, r *http.Request) {
+// ClickCell updates the game after a cell click and serves the new
+// game grid
+func (g *GameController) ClickCell(w http.ResponseWriter, r *http.Request) {
 	row, err := strconv.Atoi(r.URL.Query().Get("row"))
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -104,7 +105,9 @@ func (g *GameController) click(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (g *GameController) flag(w http.ResponseWriter, r *http.Request) {
+// FlagCell updates the game after a cell right click and serves the new
+// game grid
+func (g *GameController) FlagCell(w http.ResponseWriter, r *http.Request) {
 	row, err := strconv.Atoi(r.URL.Query().Get("row"))
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -128,7 +131,9 @@ func (g *GameController) flag(w http.ResponseWriter, r *http.Request) {
 	err = tmpl.ExecuteTemplate(w, "gameGrid", g.Game)
 }
 
-func (g *GameController) chord(w http.ResponseWriter, r *http.Request) {
+// ChordCell updates the game after a cell ctrl+click and serves the new
+// game grid
+func (g *GameController) ChordCell(w http.ResponseWriter, r *http.Request) {
 	row, err := strconv.Atoi(r.URL.Query().Get("row"))
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -151,7 +156,9 @@ func (g *GameController) chord(w http.ResponseWriter, r *http.Request) {
 	err = tmpl.ExecuteTemplate(w, "gameGrid", g.Game)
 }
 
-func (g *GameController) count(w http.ResponseWriter, r *http.Request) {
+// MinesCounter serves the mine counter component with the actual
+// mines count
+func (g *GameController) MinesCounter(w http.ResponseWriter, r *http.Request) {
 	counterFile := "templates/bombs-counter.tmpl"
 	tmpl, err := template.ParseFiles(counterFile)
 	if err != nil {
@@ -164,7 +171,8 @@ func (g *GameController) count(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (g *GameController) status(w http.ResponseWriter, r *http.Request) {
+// GameStatus serves the victory condition of the game
+func (g *GameController) GameStatus(w http.ResponseWriter, r *http.Request) {
 	counterFile := "templates/game-status.tmpl"
 	tmpl, err := template.ParseFiles(counterFile)
 	if err != nil {
@@ -176,11 +184,14 @@ func (g *GameController) status(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (g *GameController) clickInstructions(w http.ResponseWriter, r *http.Request) {
+// InstructionsClicked sends a HTMX HX-Trigger header in order to let
+// the view fetch the instructions component
+func (g *GameController) InstructionsClicked(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("HX-Trigger", "instructions")
 }
 
-func (g *GameController) instructions(w http.ResponseWriter, r *http.Request) {
+// Instructions serves the instructions view after the instructions HX-Trigger
+func (g *GameController) Instructions(w http.ResponseWriter, r *http.Request) {
 	counterFile := "templates/instructions.tmpl"
 	tmpl, err := template.ParseFiles(counterFile)
 	if err != nil {
